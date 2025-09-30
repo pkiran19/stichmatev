@@ -103,3 +103,7 @@ body.high-contrast{
   .calcRow{flex-direction:column}
   .twoCol{flex-direction:column}
 }
+
+#additionalClothesCheck + #additionalClothesNumLabel {
+  margin-left: 20px; /* Inline with checkbox for better UX */
+}

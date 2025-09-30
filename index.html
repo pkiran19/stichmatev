@@ -7,6 +7,8 @@
   <link rel="stylesheet" href="styles.css">
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#0b5cff"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
   <header class="topbar">
@@ -44,6 +46,17 @@
           <input id="numClothes" name="numClothes" type="number" min="1" value="1" required>
         </label>
 
+        <div class="card">
+          <label>
+            Any additional clothes given?
+            <input type="checkbox" id="additionalClothesCheck">
+          </label>
+          <label id="additionalClothesNumLabel" style="display:none;">
+            How many additional?
+            <input type="number" id="additionalClothesNum" min="0" value="0">
+          </label>
+        </div>
+        
         <label>
           Type of cloth
           <select id="clothType" name="clothType" aria-label="Type of cloth">

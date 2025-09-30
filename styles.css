@@ -39,6 +39,22 @@ label{
   display:block;
   margin-bottom:10px;
 }
+#additionalClothesCheck + #additionalClothesNumLabel {
+  margin-left: 20px; /* Inline with checkbox for better UX */
+}
+#alterationFields label {
+  display: block;
+  margin-bottom: 10px;
+}
+#alterationFields select, #alterationFields input[type="number"] {
+  width: 100%;
+  padding: 10px 12px;
+  box-sizing: border-box;
+  border-radius: 8px;
+  border: 1px solid #e6eef8;
+  margin-top: 6px;
+  font-size: 16px;
+}
 input[type="text"],input[type="number"],input[type="date"],select,textarea,input[type="tel"]{
   width:100%;
   padding:10px 12px;
@@ -104,6 +120,4 @@ body.high-contrast{
   .twoCol{flex-direction:column}
 }
 
-#additionalClothesCheck + #additionalClothesNumLabel {
-  margin-left: 20px; /* Inline with checkbox for better UX */
-}
+

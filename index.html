@@ -69,6 +69,29 @@
           </select>
         </label>
 
+        <div class="card">
+          <label>
+            Is this an alteration? (e.g., repair/modify existing clothes)
+            <input type="checkbox" id="isAlterationCheck">
+          </label>
+          <div id="alterationFields" style="display:none; margin-left:20px;">
+          <label>
+            Alteration type
+           <select id="alterationType">
+            <option value="">Select type</option>
+            <option value="Hemming">Hemming/Shortening</option>
+            <option value="Resizing">Resizing/Tightening</option>
+            <option value="Patching">Patching/Repair</option>
+            <option value="Other">Other</option>
+          </select>
+          </label>
+    <label>
+      Number of alterations
+      <input type="number" id="alterationNum" min="1" value="1">
+    </label>
+  </div>
+</div>
+
         <div id="sizeFields" aria-live="polite"></div>
 
         <label>

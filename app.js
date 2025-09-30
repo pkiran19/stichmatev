@@ -1,4 +1,4 @@
-// StitchMate v2 - single-user local app with contacts, due date, search/sort, printable receipt, PDF download, additional clothes
+// StitchMate v2 - single-user local app with contacts, due date, search/sort, printable receipt, PDF download, additional clothes, alterations
 (function(){
   const ORDERS_KEY = 'stitchmate_orders_v2';
   const PROFILES_KEY = 'stitchmate_profiles_v2';
@@ -36,6 +36,9 @@
   const sortSelect = document.getElementById('sortSelect');
   const additionalClothesCheck = document.getElementById('additionalClothesCheck');
   const additionalClothesNum = document.getElementById('additionalClothesNum');
+  const isAlterationCheck = document.getElementById('isAlterationCheck');
+  const alterationType = document.getElementById('alterationType');
+  const alterationNum = document.getElementById('alterationNum');
 
   let orders = load(ORDERS_KEY) || [];
   let profiles = load(PROFILES_KEY) || {};
@@ -61,6 +64,14 @@
     const show = additionalClothesCheck.checked;
     document.getElementById('additionalClothesNumLabel').style.display = show ? 'block' : 'none';
     if (!show) additionalClothesNum.value = 0;
+  });
+  isAlterationCheck.addEventListener('change', () => {
+    const show = isAlterationCheck.checked;
+    document.getElementById('alterationFields').style.display = show ? 'block' : 'none';
+    if (!show) {
+      alterationType.value = '';
+      alterationNum.value = 1;
+    }
   });
 
   function load(key){
@@ -97,6 +108,12 @@
       additionalClothesCheck.checked = p.additional ? p.additional.has : false;
       additionalClothesNum.value = p.additional ? p.additional.count : 0;
       document.getElementById('additionalClothesNumLabel').style.display = additionalClothesCheck.checked ? 'block' : 'none';
+      isAlterationCheck.checked = p.alteration ? p.alteration.is : false;
+      if (p.alteration && p.alteration.is) {
+        alterationType.value = p.alteration.type || '';
+        alterationNum.value = p.alteration.num || 1;
+      }
+      document.getElementById('alterationFields').style.display = isAlterationCheck.checked ? 'block' : 'none';
     }
   }
 
@@ -125,17 +142,22 @@
       has: additionalClothesCheck.checked,
       count: additionalClothesCheck.checked ? parseInt(additionalClothesNum.value) || 0 : 0
     };
+    const alteration = {
+      is: isAlterationCheck.checked,
+      type: isAlterationCheck.checked ? alterationType.value : '',
+      num: isAlterationCheck.checked ? parseInt(alterationNum.value) || 1 : 0
+    };
 
     const order = {
       id: 'o_'+Date.now(),
-      name, phone, addr, num, type, sizes, total, advance, remaining, date: dateVal, due, additional, createdAt: new Date().toISOString()
+      name, phone, addr, num, type, sizes, total, advance, remaining, date: dateVal, due, additional, alteration, createdAt: new Date().toISOString()
     };
 
     orders.unshift(order);
     save(ORDERS_KEY, orders);
 
     if(saveProfile.checked){
-      profiles[name] = { type, sizes, phone, address: addr, additional, updatedAt: new Date().toISOString() };
+      profiles[name] = { type, sizes, phone, address: addr, additional, alteration, updatedAt: new Date().toISOString() };
       save(PROFILES_KEY, profiles);
     }
 
@@ -173,7 +195,7 @@
       const overdue = order.due && (new Date(order.due) < new Date()) && order.remaining>0;
       const meta = document.createElement('div');
       meta.className = 'meta';
-      meta.innerHTML = `<strong>${escapeHtml(order.name)}</strong> <small>${order.type} • x${order.num} ${order.additional && order.additional.has ? '+${order.additional.count} additional' : ''} • ${order.date}</small>
+      meta.innerHTML = `<strong>${escapeHtml(order.name)}</strong> <small>${order.type} • x${order.num} ${order.additional && order.additional.has ? '+${order.additional.count} additional' : ''} ${order.alteration && order.alteration.is ? `• Alteration: ${order.alteration.type} x${order.alteration.num}` : ''} • ${order.date}</small>
         <div><small>${order.phone ? '📞 '+escapeHtml(order.phone)+' • ' : ''}${order.addr?escapeHtml(order.addr)+' • ':''}${order.due?('Due: '+order.due+' • '):''}Advance: ₹${order.advance} • Remaining: ₹${order.remaining} • Total: ₹${order.total}</small></div>
         <details><summary>Sizes</summary><pre>${formatSizes(order.sizes)}</pre></details>
       `;
@@ -252,6 +274,10 @@
               <td style="padding:10px 12px;border:1px solid #eee;">-</td>
               <td style="padding:10px 12px;border:1px solid #eee;">${order.additional.count}</td>
               <td style="padding:10px 12px;border:1px solid #eee;">Included</td></tr>` : ''}
+          ${order.alteration && order.alteration.is ? `<tr><td style="padding:10px 12px;border:1px solid #eee;">Alteration</td>
+              <td style="padding:10px 12px;border:1px solid #eee;">${escapeHtml(order.alteration.type)}</td>
+              <td style="padding:10px 12px;border:1px solid #eee;">${order.alteration.num}</td>
+              <td style="padding:10px 12px;border:1px solid #eee;">Included</td></tr>` : ''}
         </table>
         <div style="text-align:right;margin:16px 0; font-weight:bold;">
           <div>Advance: ₹${order.advance.toFixed(2)}</div>
@@ -265,6 +291,10 @@
         ${order.additional && order.additional.has ? `
         <div style="border:1px solid #ddd; padding:10px; margin:10px 0; background:#f9f9f9;">
           <div style="color:#666;font-size:13px;">Additional Clothes: ${order.additional.count}</div>
+        </div>` : ''}
+        ${order.alteration && order.alteration.is ? `
+        <div style="border:1px solid #ddd; padding:10px; margin:10px 0; background:#f9f9f9;">
+          <div style="color:#666;font-size:13px;">Alteration Details: ${escapeHtml(order.alteration.type)} x${order.alteration.num}</div>
         </div>` : ''}
         <p style="text-align:center; margin-top:20px; color:#666; font-size:13px;">Thank you for your business!</p>
       </div>
@@ -309,11 +339,12 @@
 
   function exportCSV(){
     if(orders.length===0){ alert('No orders to export'); return; }
-    const header = ['id','name','phone','address','date','due','type','num','total','advance','remaining','sizes','additional'];
+    const header = ['id','name','phone','address','date','due','type','num','total','advance','remaining','sizes','additional','alteration'];
     const rows = orders.map(o => {
       const sizesText = Object.entries(o.sizes||{}).map(([k,v]) => k+':'+(v||'')).join('|');
       const additionalText = JSON.stringify(o.additional || {has: false, count: 0});
-      return [o.id, o.name, o.phone||'', o.addr||'', o.date||'', o.due||'', o.type, o.num, o.total, o.advance, o.remaining, '"' + sizesText + '"', additionalText];
+      const alterationText = JSON.stringify(o.alteration || {is: false, type: '', num: 0});
+      return [o.id, o.name, o.phone||'', o.addr||'', o.date||'', o.due||'', o.type, o.num, o.total, o.advance, o.remaining, '"' + sizesText + '"', additionalText, alterationText];
     });
     const csv = [header.join(','), ...rows.map(r => r.join(','))].join('\n');
     const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
@@ -340,6 +371,10 @@
     additionalClothesCheck.checked = false;
     document.getElementById('additionalClothesNumLabel').style.display = 'none';
     additionalClothesNum.value = 0;
+    isAlterationCheck.checked = false;
+    document.getElementById('alterationFields').style.display = 'none';
+    alterationType.value = '';
+    alterationNum.value = 1;
   }
 
   function toggleContrast(){
@@ -360,7 +395,7 @@
           th{background:#f7f9ff; color:#0b1b2b;}
           .totals{text-align:right;margin:16px 0; font-weight:bold;}
           .muted{color:#666;font-size:13px;}
-          .print-btn{background:#0b5cff; color:white; border:none; padding:10px 20px; border-radius:8px; cursor:pointer; margin:10px 0; display:block; margin:10px auto;}
+          .print-btn{background:#0b5cff; color:white; border:none; padding:12px 24px; border-radius:8px; cursor:pointer; margin:20px auto; display:block; font-size:16px;}
           .sizes-section{border:1px solid #ddd; padding:10px; margin:10px 0; background:#f9f9f9;}
         </style>
       </head><body>
@@ -376,6 +411,7 @@
           <tr><th>Item</th><th>Type</th><th>Qty</th><th>Amount</th></tr>
           <tr><td>Clothing</td><td>${escapeHtml(order.type)}</td><td>${order.num}</td><td>₹${order.total.toFixed(2)}</td></tr>
           ${order.additional && order.additional.has ? `<tr><td>Additional</td><td>-</td><td>${order.additional.count}</td><td>Included</td></tr>` : ''}
+          ${order.alteration && order.alteration.is ? `<tr><td>Alteration</td><td>${escapeHtml(order.alteration.type)}</td><td>${order.alteration.num}</td><td>Included</td></tr>` : ''}
         </table>
         <div class="totals">
           <div>Advance: ₹${order.advance.toFixed(2)}</div>
@@ -390,21 +426,26 @@
         <div class="sizes-section">
           <div class="muted">Additional Clothes: ${order.additional.count}</div>
         </div>` : ''}
+        ${order.alteration && order.alteration.is ? `
+        <div class="sizes-section">
+          <div class="muted">Alteration Details: ${escapeHtml(order.alteration.type)} x${order.alteration.num}</div>
+        </div>` : ''}
         <p class="muted" style="text-align:center; margin-top:20px;">Thank you for your business!</p>
-        <button class="print-btn" onclick="window.print();">Print Receipt (or Save as PDF)</button>
+        <button class="print-btn" onclick="window.print(); close();">Print Receipt (or Save as PDF)</button>
       </div>
+      <script>
+        window.focus();
+        setTimeout(() => { if (window.print) window.print(); }, 500);
+      </script>
       </body></html>
     `;
-    const w = window.open('', '_blank', 'width=600,height=800,noopener');
+    const w = window.open('', '_blank', 'width=600,height=800,noopener,noreferrer');
     if (w) {
       w.document.write(receiptHtml);
       w.document.close();
-      // Fallback: Focus and alert if print fails
-      w.onload = () => {
-        if (!w.print) alert('Print window opened—tap "Print Receipt" button inside and choose "Save as PDF" for a file.');
-      };
+      w.focus();
     } else {
-      alert('Allow popups for the browser to open the receipt window.');
+      alert('Popup blocked—allow popups in browser settings, or use "Download" for PDF instead.');
     }
   }
 

@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>StitchMate — Stitching Tracker</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0b5cff"/>
+</head>
+<body>
+  <header class="topbar">
+    <h1>StitchMate</h1>
+    <button id="contrastToggle" title="Toggle high contrast" aria-pressed="false">High contrast</button>
+  </header>
+
+  <main class="container">
+    <section class="card" aria-labelledby="formTitle">
+      <h2 id="formTitle">Add / Save Order</h2>
+      <form id="orderForm" autocomplete="off">
+        <label>
+          Recipient name
+          <input id="recipientName" name="recipientName" type="text" required aria-required="true" placeholder="e.g., Rekha Devi">
+        </label>
+
+        <div class="twoCol">
+          <label>
+            Phone number
+            <input id="phoneNumber" name="phoneNumber" type="tel" placeholder="e.g., 9876543210">
+          </label>
+          <label>
+            Due date
+            <input id="dueDate" name="dueDate" type="date">
+          </label>
+        </div>
+
+        <label>
+          Address
+          <textarea id="address" rows="2" placeholder="House/Street/Area"></textarea>
+        </label>
+
+        <label>
+          Number of clothes
+          <input id="numClothes" name="numClothes" type="number" min="1" value="1" required>
+        </label>
+
+        <label>
+          Type of cloth
+          <select id="clothType" name="clothType" aria-label="Type of cloth">
+            <option value="Blouse" selected>Blouse</option>
+            <option value="Shirt">Shirt</option>
+            <option value="Kurta">Kurta</option>
+            <option value="Dress">Dress</option>
+            <option value="Pant">Pant</option>
+            <option value="Other">Other</option>
+          </select>
+        </label>
+
+        <div id="sizeFields" aria-live="polite"></div>
+
+        <label>
+          Total amount
+          <input id="totalAmount" name="totalAmount" type="number" min="0" step="0.01" value="0" required>
+        </label>
+
+        <label>
+          Advance paid
+          <input id="advanceAmount" name="advanceAmount" type="number" min="0" step="0.01" value="0">
+        </label>
+
+        <div class="calcRow">
+          <label>
+            Remaining
+            <input id="remainingAmount" name="remainingAmount" type="number" readonly>
+          </label>
+          <label>
+            Order date
+            <input id="orderDate" name="orderDate" type="date">
+          </label>
+        </div>
+
+        <label class="saveProfileLabel">
+          <input id="saveProfile" type="checkbox">
+          Save sizes & contact to recipient profile
+        </label>
+
+        <div class="formActions">
+          <button id="saveOrderBtn" type="submit">Save order</button>
+          <button id="clearFormBtn" type="button">Clear</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="card" aria-labelledby="historyTitle">
+      <h2 id="historyTitle">History & Profiles</h2>
+
+      <div class="controlsRow">
+        <input id="filterName" placeholder="Search by name / phone / address">
+        <select id="sortSelect" title="Sort orders">
+          <option value="date_desc">Date ▾</option>
+          <option value="date_asc">Date ▴</option>
+          <option value="balance_desc">Outstanding ▾</option>
+          <option value="balance_asc">Outstanding ▴</option>
+        </select>
+        <button id="showAllBtn">Show all</button>
+        <button id="exportCsvBtn">Export CSV</button>
+        <button id="backupBtn">Download backup (JSON)</button>
+      </div>
+
+      <div id="historyList" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <footer class="footer">StitchMate — local-only PWA. Data kept on your phone/browser.</footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

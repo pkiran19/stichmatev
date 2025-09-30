@@ -1,0 +1,105 @@
+:root{
+  --bg:#ffffff;
+  --card:#f7f9ff;
+  --text:#0b1b2b;
+  --accent:#0b5cff;
+  --muted:#6b7280;
+  --radius:12px;
+  font-size:18px;
+}
+body{
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+.topbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:14px 18px;
+  background:linear-gradient(90deg,var(--accent),#0ea5ff20);
+  color:white;
+}
+.container{
+  max-width:920px;
+  margin:18px auto;
+  padding:0 12px 60px;
+}
+.card{
+  background:var(--card);
+  border-radius:var(--radius);
+  padding:14px;
+  margin-bottom:16px;
+  box-shadow: 0 6px 20px rgba(11,28,45,0.06);
+}
+label{
+  display:block;
+  margin-bottom:10px;
+}
+input[type="text"],input[type="number"],input[type="date"],select,textarea,input[type="tel"]{
+  width:100%;
+  padding:10px 12px;
+  box-sizing:border-box;
+  border-radius:8px;
+  border:1px solid #e6eef8;
+  margin-top:6px;
+  font-size:16px;
+}
+textarea{resize:vertical;}
+.twoCol{display:flex;gap:8px}
+.twoCol label{flex:1}
+.calcRow{
+  display:flex;
+  gap:10px;
+}
+.calcRow label{flex:1;}
+.formActions{
+  margin-top:12px;
+  display:flex;
+  gap:8px;
+}
+button{
+  background:var(--accent);
+  border:none;
+  color:white;
+  padding:10px 12px;
+  border-radius:10px;
+  font-size:16px;
+  cursor:pointer;
+}
+button[disabled]{opacity:0.6;cursor:default}
+#contrastToggle{
+  background:transparent;color:white;border:1px solid rgba(255,255,255,0.2);padding:8px 10px;border-radius:10px;
+}
+.controlsRow{
+  display:flex;
+  gap:8px;
+  align-items:center;
+  margin-bottom:12px;
+}
+.controlsRow input{flex:1;padding:8px 10px}
+#historyList .order{
+  border-radius:8px;padding:8px;margin-bottom:8px;background:white;display:flex;justify-content:space-between;gap:10px;align-items:center;
+}
+.order .meta{flex:1}
+.order .actions{display:flex;gap:6px}
+.order small{color:var(--muted)}
+.saveProfileLabel{display:flex;gap:8px;align-items:center}
+.footer{text-align:center;padding:12px;color:var(--muted);font-size:14px;margin-top:12px}
+
+/* High contrast mode */
+body.high-contrast{
+  --bg:#000000;
+  --card:#111111;
+  --text:#f7f7f7;
+  --accent:#ffd500;
+  --muted:#bbbbbb;
+}
+@media (max-width:640px){
+  :root{font-size:16px}
+  .calcRow{flex-direction:column}
+  .twoCol{flex-direction:column}
+}
